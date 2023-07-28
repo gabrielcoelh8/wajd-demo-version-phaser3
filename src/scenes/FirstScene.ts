@@ -35,6 +35,7 @@ export default class FirstScene extends Phaser.Scene {
         this.player = this.physics.add.sprite(500, 0, 'alienBeige')
         this.player.setBounce(0.2)
 		this.player.setCollideWorldBounds(true)
+        this.physics.add.collider(this.player, this.platforms)
    
 		this.anims.create(
            {

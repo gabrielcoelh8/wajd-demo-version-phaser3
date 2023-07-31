@@ -4,6 +4,8 @@ import Phaser from 'phaser'
 export default class FirstScene extends Phaser.Scene {
     private platforms?: Phaser.Physics.Arcade.StaticGroup
 	private player?: Phaser.Physics.Arcade.Sprite
+    private playersToOrder?: Phaser.Physics.Arcade.Group
+    private numbers?: Phaser.Physics.Arcade.Sprite
 	private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
     
     constructor() {
@@ -14,27 +16,56 @@ export default class FirstScene extends Phaser.Scene {
         this.load.image('bgCastle', 'assets/bg_castle.png')
         this.load.atlasXML('alienBeige', 'assets/atlas/alienBeige.png', 'assets/atlas/alienBeige.xml')
         this.load.image('grass', 'assets/ambient/grass/grass.png')
-        
-        ////TESTING
-        this.load.multiatlas('grassAtlas','assets/ambient/grass/Grass.json')
+        this.load.image('liquidLava', 'assets/ambient/lava/tilemap.png')
+        this.load.image('number0', 'assets/UI/numbers/hud_0.png')
+        this.load.image('number1', 'assets/UI/numbers/hud_1.png')
     }   
 
     create() {
-        //bg temporarario
-        this.add.image(1024/2, 512/2,'bgCastle')
-        console.log('grassAtlas')
-
-        //plataformas
-        this.platforms = this.physics.add.staticGroup()
-        this.platforms.create(600, 400, 'grass')
-
-        ///TESTING {https://github.com/photonstorm/phaser3-examples/blob/master/public/src/textures/multi%20atlas.js}
-        //this.add.image(0, 0, 'grass', 'grass.png').setOrigin(0);
+        /*const mapping = [["grassHalfLeft.png","grassHalfMid.png","grassHalfRight.png"]]
+        const map = this.make.tilemap({data: mapping, tileHeight: 70, tileWidth: 70})
+        map.addTilesetImage('ambientTiles')
+        const layer = map.createLayer(0, 'ambientTiles', 0, 0)
+        
+        tentando fazer tilemap sem tiled
         
 
-        this.player = this.physics.add.sprite(500, 0, 'alienBeige')
-        this.player.setBounce(0.2)
+        const array = [
+            Array.from({ length: 11 }, (_, index) => index), // Primeira linha de 0 a 10
+            Array.from({ length: 11 }, (_, index) => index + 11), // Segunda linha de 11 a 20
+            Array.from({ length: 11 }, (_, index) => index + 21) // Terceira linha de 21 a 30
+        ]*/
+
+
+        //bg temporarario
+        const background = this.add.image(this.scale.width/2, this.scale.height/2,'bgCastle')
+    
+        //plataformas
+        this.platforms = this.physics.add.staticGroup()
+        this.platforms.create(100, 250, 'grass')
+
+        //const randomNumbers = Array.from({ length: 7 }, () => Math.floor(Math.random() * 8));
+        const numberOfVariables = 7
+        for (let i = 0; i < numberOfVariables; i++) {
+            const numeroDecimal = Math.random();
+            const numeroAleatorio = Math.floor(numeroDecimal * 2);
+            const x = (380+(i*70))
+            const y = 250
+
+            const platform = this.platforms.create(x, y, 'grass')
+            const playerToOrder = this.add.image(0, 0,'alienBeige', 'alienBeige_stand.png' )
+            const orderNumber = this.add.image(0, -70,`number${numeroAleatorio}`)
+
+            const container = this.add.container(x, y-80, [ playerToOrder, orderNumber ]);
+            
+            //fisica
+            this.physics.add.collider(playerToOrder, platform)
+        }
+
+        this.player = this.physics.add.sprite(100, 160, 'alienBeige')
+        this.player.setBounce(0.1)
 		this.player.setCollideWorldBounds(true)
+        this.player.setSize(50, 90);  //hitbox
         this.physics.add.collider(this.player, this.platforms)
    
 		this.anims.create(
@@ -73,7 +104,7 @@ export default class FirstScene extends Phaser.Scene {
             }
         )
 
-        this.cursors = this.input.keyboard.createCursorKeys()
+        this.cursors = this.input.keyboard?.createCursorKeys()
     }
 
     update() {
@@ -96,8 +127,8 @@ export default class FirstScene extends Phaser.Scene {
 		}
 
 		//jump
-		if(this.cursors.up?.isDown || this.cursors.space.isDown /*&& this.player?.body.touching.down*/) {
-			this.player?.setVelocityY(-330)
+		if((this.cursors.up?.isDown || this.cursors.space.isDown) && this.player?.body?.touching.down) {
+			this.player?.setVelocityY(-200)
             this.player?.anims.play('jump')
 		}
     }

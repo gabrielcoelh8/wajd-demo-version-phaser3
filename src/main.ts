@@ -5,7 +5,7 @@ const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
 	parent: 'app',
 	width: 1024,
-	height: 512,
+	height: 768,
 	physics: {
 		default: 'arcade',
 		arcade: {

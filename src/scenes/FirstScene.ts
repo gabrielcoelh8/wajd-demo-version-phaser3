@@ -4,8 +4,8 @@ import Phaser from 'phaser'
 export default class FirstScene extends Phaser.Scene {
     private platforms?: Phaser.Physics.Arcade.StaticGroup
 	private player?: Phaser.Physics.Arcade.Sprite
-    private playersToOrder?: Phaser.Physics.Arcade.Group
-    private numbers?: Phaser.Physics.Arcade.Sprite
+    //private playersToOrder?: Phaser.Physics.Arcade.Group
+    //private numbers?: Phaser.Physics.Arcade.Sprite
 	private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
     
     constructor() {
@@ -38,7 +38,7 @@ export default class FirstScene extends Phaser.Scene {
 
 
         //bg temporarario
-        const background = this.add.image(this.scale.width/2, this.scale.height/2,'bgCastle')
+        this.add.image(this.scale.width/2, this.scale.height/2,'bgCastle')
     
         //plataformas
         this.platforms = this.physics.add.staticGroup()
@@ -59,7 +59,7 @@ export default class FirstScene extends Phaser.Scene {
             const container = this.add.container(x, y-80, [ playerToOrder, orderNumber ]);
             
             //fisica
-            this.physics.add.collider(playerToOrder, platform)
+            this.physics.add.collider(container, platform)
         }
 
         this.player = this.physics.add.sprite(100, 160, 'alienBeige')

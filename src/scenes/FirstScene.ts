@@ -19,6 +19,7 @@ export default class FirstScene extends Phaser.Scene {
         this.load.image('liquidLava', 'assets/ambient/lava/tilemap.png')
         this.load.image('number0', 'assets/UI/numbers/hud_0.png')
         this.load.image('number1', 'assets/UI/numbers/hud_1.png')
+        this.load.atlas('number', 'assets/UI/numbers.png', 'assets/UI/numbers.json')
     }   
 
     create() {
@@ -29,13 +30,11 @@ export default class FirstScene extends Phaser.Scene {
         
         tentando fazer tilemap sem tiled
         
-
         const array = [
             Array.from({ length: 11 }, (_, index) => index), // Primeira linha de 0 a 10
             Array.from({ length: 11 }, (_, index) => index + 11), // Segunda linha de 11 a 20
             Array.from({ length: 11 }, (_, index) => index + 21) // Terceira linha de 21 a 30
         ]*/
-
 
         //bg temporarario
         this.add.image(this.scale.width/2, this.scale.height/2,'bgCastle')
@@ -48,18 +47,22 @@ export default class FirstScene extends Phaser.Scene {
         const numberOfVariables = 7
         for (let i = 0; i < numberOfVariables; i++) {
             const numeroDecimal = Math.random();
-            const numeroAleatorio = Math.floor(numeroDecimal * 2);
+            const numeroAleatorio = Math.floor(numeroDecimal * 10);
             const x = (380+(i*70))
             const y = 250
 
-            const platform = this.platforms.create(x, y, 'grass')
-            const playerToOrder = this.add.image(0, 0,'alienBeige', 'alienBeige_stand.png' )
-            const orderNumber = this.add.image(0, -70,`number${numeroAleatorio}`)
+            const platform : Phaser.Physics.Arcade.StaticGroup = this.platforms.create(x, y, 'grass')
+            const playerToOrder = this.physics.add.sprite(0, 0,'alienBeige', 'alienBeige_stand.png')
+            const orderNumber = this.add.image(playerToOrder.x, playerToOrder.y-70,'number',`hud_${numeroAleatorio}.png`)
 
-            const container = this.add.container(x, y-80, [ playerToOrder, orderNumber ]);
+            const container = this.add.container(x, y-80, [ playerToOrder, orderNumber ])
+            
+            playerToOrder.setBounce(0.1);
+            playerToOrder.setCollideWorldBounds(true)
+            playerToOrder.setSize(50, 90);  //hitbox
             
             //fisica
-            this.physics.add.collider(container, platform)
+            this.physics.add.collider(playerToOrder, platform)
         }
 
         this.player = this.physics.add.sprite(100, 160, 'alienBeige')

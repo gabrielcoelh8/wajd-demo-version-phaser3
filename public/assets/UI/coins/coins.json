@@ -1,0 +1,166 @@
+{
+	"textures": [
+		{
+			"image": "coins",
+			"format": "RGBA8888",
+			"size": {
+				"w": 261,
+				"h": 47
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "coinBronze.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 70,
+						"h": 70
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 18,
+						"w": 53,
+						"h": 47
+					},
+					"frame": {
+						"x": 0,
+						"y": 0,
+						"w": 53,
+						"h": 47
+					}
+				},
+				{
+					"filename": "coinGold.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 70,
+						"h": 70
+					},
+					"spriteSourceSize": {
+						"x": 17,
+						"y": 18,
+						"w": 36,
+						"h": 36
+					},
+					"frame": {
+						"x": 53,
+						"y": 0,
+						"w": 36,
+						"h": 36
+					}
+				},
+				{
+					"filename": "coinSilver.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 70,
+						"h": 70
+					},
+					"spriteSourceSize": {
+						"x": 17,
+						"y": 18,
+						"w": 36,
+						"h": 36
+					},
+					"frame": {
+						"x": 89,
+						"y": 0,
+						"w": 36,
+						"h": 36
+					}
+				},
+				{
+					"filename": "gemBlue.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 70,
+						"h": 70
+					},
+					"spriteSourceSize": {
+						"x": 18,
+						"y": 23,
+						"w": 34,
+						"h": 24
+					},
+					"frame": {
+						"x": 125,
+						"y": 0,
+						"w": 34,
+						"h": 24
+					}
+				},
+				{
+					"filename": "gemGreen.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 70,
+						"h": 70
+					},
+					"spriteSourceSize": {
+						"x": 18,
+						"y": 23,
+						"w": 34,
+						"h": 24
+					},
+					"frame": {
+						"x": 159,
+						"y": 0,
+						"w": 34,
+						"h": 24
+					}
+				},
+				{
+					"filename": "gemRed.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 70,
+						"h": 70
+					},
+					"spriteSourceSize": {
+						"x": 18,
+						"y": 23,
+						"w": 34,
+						"h": 24
+					},
+					"frame": {
+						"x": 193,
+						"y": 0,
+						"w": 34,
+						"h": 24
+					}
+				},
+				{
+					"filename": "gemYellow.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 70,
+						"h": 70
+					},
+					"spriteSourceSize": {
+						"x": 18,
+						"y": 23,
+						"w": 34,
+						"h": 24
+					},
+					"frame": {
+						"x": 227,
+						"y": 0,
+						"w": 34,
+						"h": 24
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "http://free-tex-packer.com",
+		"version": "0.6.7"
+	}
+}

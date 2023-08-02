@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import Phaser from 'phaser'
 
@@ -5,12 +6,8 @@ import Phaser from 'phaser'
 export default class FirstScene extends Phaser.Scene {
     private platforms?: Phaser.Physics.Arcade.StaticGroup
 	private player?: Phaser.Physics.Arcade.Sprite
-    //private playersToOrder?: Phaser.Physics.Arcade.Sprite
-    //private numbers?: Phaser.Physics.Arcade.Sprite
 	private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
-    // bounds = scene.plugins.get('rexboundsplugin').add(gameObject, config);
     private ground?: Phaser.GameObjects.TileSprite
-    //private tilemaps?: Phaser.Physics.Arcade.StaticGroup
 
     constructor() {
 		super('first-scene')
@@ -27,7 +24,7 @@ export default class FirstScene extends Phaser.Scene {
     create() {
         this.physics.world.setBounds(0, 0, this.scale.width, this.scale.height);
         
-        //bg temporarario
+        //tiles
         this.add.image(this.scale.width/2, this.scale.height/2,'bgCastle').setScale(2)
         this.ground = this.add.tileSprite(this.scale.width/2, this.scale.height-30, this.scale.width, 70, 'lava').setScale(1).setName('groundtiles')
         this.physics.add.existing(this.ground, true)
@@ -36,8 +33,15 @@ export default class FirstScene extends Phaser.Scene {
         //plataformas
         this.platforms = this.physics.add.staticGroup()
         this.platforms.create(100, 250, 'grass')
+        this.player = this.physics.add.sprite(100, 160, 'alienBeige')
+        this.player.setBounce(0.1)
+        this.physics.add.collider(this.player, this.platforms)
 
-
+        //overlap com ground
+        const p1 = this.player
+        this.physics.add.overlap(p1, this.ground, () => this.handleDeathLava(p1))
+        
+        //numeros aleatorios
         const numberOfVariables = 7
         const numeros = Array.from({ length: numberOfVariables }, (_, index) => index);
         const numerosAleatorios = this.shuffleNumeros(numeros);
@@ -45,22 +49,21 @@ export default class FirstScene extends Phaser.Scene {
         for (let i = 0; i < numberOfVariables; i++) {
             const x = (380+(i*70))
             const y = 250
+
+            //criação
             const platform : Phaser.Physics.Arcade.StaticGroup = this.platforms.create(x, y, 'grass')
             const playerToOrder = this.physics.add.sprite(x, y-80,'alienBeige', 'alienBeige_stand.png')
             const orderNumber = this.physics.add.sprite(playerToOrder.x, playerToOrder.y-70,'number',`hud_${numerosAleatorios[i]}.png`)
             
+            //physics
             playerToOrder.setBounce(0.7)
             playerToOrder.setCollideWorldBounds(true)
             this.physics.add.collider(playerToOrder, platform)
             this.physics.add.collider(orderNumber, playerToOrder)
+            this.physics.add.overlap(playerToOrder, this.player, () => this.handleOverlap(playerToOrder))
         }
 
-        this.player = this.physics.add.sprite(100, 160, 'alienBeige')
-        this.player.setBounce(0.1)
-		this.player.setCollideWorldBounds(true)
-        //this.player.setSize(50, 90) //hitbox
-        this.physics.add.collider(this.player, this.platforms)
-        
+        //animações
 		this.anims.create(
            {
             key: 'walk',
@@ -150,5 +153,18 @@ export default class FirstScene extends Phaser.Scene {
             [array[i], array[j]] = [array[j], array[i]];
           }
           return array;
+    }
+
+    handleOverlap(playerToOrder:Phaser.Types.Physics.Arcade.SpriteWithDynamicBody) {
+        playerToOrder.setState('marcado')
+        if(playerToOrder.state == 'marcado') {
+            playerToOrder.setAlpha(0.5)
+        }
+    }
+
+    handleDeathLava(player:Phaser.Physics.Arcade.Sprite) {
+        player.anims.play('duck', true)
+        player.setVelocityY(50)
+        player.setTint(0xff0000)
     }
 }

@@ -17,7 +17,8 @@ export default class FirstScene extends Phaser.Scene {
         this.load.image('bgCastle', 'assets/bg_castle.png')
         this.load.atlasXML('alienBeige', 'assets/atlas/aliens/alienBeige.png', 'assets/atlas/aliens/alienBeige.xml')
         this.load.image('grass', 'assets/ambient/grass/grass.png')
-        this.load.image('lava', 'assets/ambient/lava/liquidLavaTop.png')
+        this.load.image('lava', 'assets/ambient/lava/liquidLava.png')
+        this.load.image('lavaTop', 'assets/ambient/lava/liquidLavaTop.png')
         this.load.atlas('number', 'assets/UI/numbers.png', 'assets/UI/numbers.json')
     }   
 
@@ -26,7 +27,8 @@ export default class FirstScene extends Phaser.Scene {
         
         //tiles
         this.add.image(this.scale.width/2, this.scale.height/2,'bgCastle').setScale(2)
-        this.ground = this.add.tileSprite(this.scale.width/2, this.scale.height-30, this.scale.width, 70, 'lava').setScale(1).setName('groundtiles')
+        this.add.tileSprite(this.scale.width/2, this.scale.height-100, this.scale.width, 70, 'lavaTop').setScale(1).setName('lavaTop').setZ(2)
+        this.ground = this.add.tileSprite(this.scale.width/2, this.scale.height-30, this.scale.width, 70, 'lava').setScale(1).setName('lavaLiquid')
         this.physics.add.existing(this.ground, true)
         
 
@@ -35,6 +37,8 @@ export default class FirstScene extends Phaser.Scene {
         this.platforms.create(100, 250, 'grass')
         this.player = this.physics.add.sprite(100, 160, 'alienBeige')
         this.player.setBounce(0.1)
+        this.player.setSize(50, 90)
+        this.player.setCollideWorldBounds(true)
         this.physics.add.collider(this.player, this.platforms)
 
         //overlap com ground
@@ -52,8 +56,8 @@ export default class FirstScene extends Phaser.Scene {
 
             //criação
             const platform : Phaser.Physics.Arcade.StaticGroup = this.platforms.create(x, y, 'grass')
-            const playerToOrder = this.physics.add.sprite(x, y-80,'alienBeige', 'alienBeige_stand.png')
-            const orderNumber = this.physics.add.sprite(playerToOrder.x, playerToOrder.y-70,'number',`hud_${numerosAleatorios[i]}.png`)
+            const playerToOrder = this.physics.add.sprite(x, y-80, 'alienBeige', 'alienBeige_stand.png').setName(`player${i}`)
+            const orderNumber = this.physics.add.sprite(playerToOrder.x, playerToOrder.y-70, 'number',`hud_${numerosAleatorios[i]}.png`)
             
             //physics
             playerToOrder.setBounce(0.7)
@@ -118,8 +122,12 @@ export default class FirstScene extends Phaser.Scene {
         if (!this.cursors) {
 			return
 		} 
-		
-        if (this.cursors.left?.isDown) {
+        else if (this.player?.state == 'morto') {
+            this.player?.anims.play('duck', true)
+            this.player.setVelocityY(50)
+            this.player?.setVelocityX(0)
+        } 
+        else if (this.cursors.left?.isDown) {
 			this.player?.setVelocityX(-160)
             this.player?.setFlipX(true)
 			this.player?.anims.play('walk', true)
@@ -133,17 +141,16 @@ export default class FirstScene extends Phaser.Scene {
 			this.player?.anims.play('duck', true)
 		}
 		else {
-            this.player?.setSize(50, 90)
 			this.player?.setVelocityX(0)
 			this.player?.anims.play('turn', true)
 		}
 
 		//jump
-		if((this.cursors.up?.isDown || this.cursors.space.isDown) && this.player?.body?.touching.down) {
+		if((this.cursors.up?.isDown || this.cursors.space.isDown) && this.player?.body?.touching.down && this.player.state!=='morto') {
 			this.player?.setVelocityY(-200)
             this.player?.anims.play('jump')
 		}
-
+        
     }
 
     //Fisher–Yates shuffle
@@ -158,13 +165,12 @@ export default class FirstScene extends Phaser.Scene {
     handleOverlap(playerToOrder:Phaser.Types.Physics.Arcade.SpriteWithDynamicBody) {
         playerToOrder.setState('marcado')
         if(playerToOrder.state == 'marcado') {
-            playerToOrder.setAlpha(0.5)
+            playerToOrder.destroy()
         }
     }
 
     handleDeathLava(player:Phaser.Physics.Arcade.Sprite) {
-        player.anims.play('duck', true)
-        player.setVelocityY(50)
+        player.setState('morto')
         player.setTint(0xff0000)
     }
 }

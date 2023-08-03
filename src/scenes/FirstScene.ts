@@ -22,6 +22,7 @@ export default class Preload extends Phaser.Scene {
         this.load.image('bgDesert', 'assets/background/bg_desert.png')
         this.load.image('bgGrasslands', 'assets/background/bg_grasslands.png')
 
+        this.load.atlasXML('alienBeige', 'assets/atlas/aliens/alienBeige.png', 'assets/atlas/aliens/alienBeige.xml')
         this.load.atlasXML('alienPink', 'assets/atlas/aliens/alienPink.png', 'assets/atlas/aliens/alienPink.xml')
         this.load.atlasXML('alienGreen', 'assets/atlas/aliens/alienGreen.png', 'assets/atlas/aliens/alienGreen.xml')
         this.load.atlasXML('alienBlue', 'assets/atlas/aliens/alienBlue.png', 'assets/atlas/aliens/alienBlue.xml')
@@ -39,6 +40,7 @@ export default class Preload extends Phaser.Scene {
         //this.score = 0;
         this.player = undefined;
         this.cursors = undefined;
+
         //this.scoreText = undefined;
         this.physics.world.setBounds(0, 0, this.scale.width, this.scale.height);
         this.cursors = this.input.keyboard?.createCursorKeys()
@@ -53,6 +55,8 @@ export default class Preload extends Phaser.Scene {
         //plataformas
         this.platforms = this.physics.add.staticGroup()
         this.platforms.create(100, 250, 'grass')
+
+        //player
         this.player = this.physics.add.sprite(100, 160, 'alienBeige')
         this.player.setBounce(0.1)
         this.player.setSize(50, 90)
@@ -68,7 +72,7 @@ export default class Preload extends Phaser.Scene {
         this.labels.setShadow(1, 1, '#000000', 2);
 
         //numeros aleatorios
-        const numberOfVariables = 7
+        const numberOfVariables = 4
         const numeros = Array.from({ length: numberOfVariables }, (_, index) => index);
         const numerosAleatorios = this.shuffleNumeros(numeros);
 
@@ -81,16 +85,16 @@ export default class Preload extends Phaser.Scene {
             'Pink'
         ]
         let alienKeys = Array.from({ length: alienColors.length }, (_, index) => index);
-        
+        alienKeys = this.shuffleNumeros(alienKeys)  //cor aleatoria
+
         //criar aliens e plataformas
         for (let i = 0; i < numberOfVariables; i++) {
-            const x = (380+(i*70))
+            const x = (380+(i*140))
             const y = 250
-            alienKeys = this.shuffleNumeros(alienKeys)  //cor aleatoria
-
+            
             //criação
             const platform: Phaser.Physics.Arcade.StaticGroup = this.platforms.create(x, y, 'grass')
-            const playerToOrder = this.physics.add.sprite(x, y-80, `alien${alienColors[alienKeys[0]]}`, `alien${alienColors[alienKeys[0]]}_stand.png`).setName(`${i}`)
+            const playerToOrder = this.physics.add.sprite(x, y-80, `alien${alienColors[alienKeys[i]]}`, `alien${alienColors[alienKeys[i]]}_stand.png`).setName(`${i}`)
             const orderNumber = this.physics.add.sprite(playerToOrder.x, playerToOrder.y-70, 'number',`hud_${numerosAleatorios[i]}.png`)
             
             //physics
@@ -102,7 +106,52 @@ export default class Preload extends Phaser.Scene {
             this.physics.add.overlap(playerToOrder, this.player, () => this.handleOverlap(playerToOrder))
         }
 
-       
+        this.anims.create(
+            {
+             key: 'walk',
+             frames: this.anims.generateFrameNames('alienBeige', {
+                 prefix: 'alienBeige_walk',
+                 suffix:'.png',
+                 start: 1,
+                 end: 2
+             }),
+             frameRate: 5,
+             repeat: -1
+            }
+         )
+    
+        this.anims.create(
+            {
+            key: 'turn',
+            frames: [
+            { key: 'alienBeige', frame: 'alienBeige_stand.png'}
+            ],
+            frameRate: 5,
+            repeat: -1
+            }
+        )
+
+        this.anims.create(
+            {
+            key: 'jump',
+            frames: [
+            { key: 'alienBeige', frame: 'alienBeige_jump.png' }
+            ],
+            frameRate: 5,
+            repeat: -1
+            }
+        )
+        
+        this.anims.create(
+            {
+            key: 'duck',
+            frames: [
+            { key: 'alienBeige', frame: 'alienBeige_hurt.png' }
+            ],
+            frameRate: 5,
+            repeat: -1
+            }
+        )
     }
 
     update() {
@@ -128,7 +177,7 @@ export default class Preload extends Phaser.Scene {
 		}
 
 		//jump
-		if((this.cursors.up?.isDown || this.cursors.space.isDown) && this.player?.body?.touching.down && this.player.state!=='morto') {
+		if((this.cursors.up?.isDown) && this.player?.body?.touching.down && this.player.state!=='morto') {
 			this.player?.setVelocityY(-200)
             this.player?.anims.play('jump')
 		}
@@ -144,6 +193,10 @@ export default class Preload extends Phaser.Scene {
         this.labels?.setText(`Life: ${this.lifes}`)
     }
 
+    restart() {
+
+    }
+
     //Fisher–Yates shuffle
     shuffleNumeros(array:integer[]){
         for (let i = array.length - 1; i > 0; i--) {
@@ -154,10 +207,9 @@ export default class Preload extends Phaser.Scene {
     }
 
     handleOverlap(playerToOrder:Phaser.Types.Physics.Arcade.SpriteWithDynamicBody) {
-        
-        if(playerToOrder.state == 'marcado') {
+        if(this.cursors?.space.isDown) {
             this.lifes--
-            playerToOrder.destroy()
+            playerToOrder.setVelocityY(-200)
             //this.player?.setState('morto')
             this.PlayerPlatformsCollider?.update() //TODO
         }
@@ -174,9 +226,9 @@ export default class Preload extends Phaser.Scene {
         this.time.addEvent({
             delay: 1000,
             callback: ()=>{
-                this.scene.switch('preload')
-            },
+                this.scene.start('preload')
+            }, 
             loop: false
         })
-    }
+     }
 }

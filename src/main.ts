@@ -1,20 +1,32 @@
 import Phaser from 'phaser'
-import FirstScene from './scenes/FirstScene'
-import Preload from './scenes/Preload'
+import Menu from './scenes/menu'
+import Preloader from './scenes/preloader'
+import Easy from './levels/easy'
 
 const config: Phaser.Types.Core.GameConfig = {
-	type: Phaser.AUTO,
-	parent: 'app',
-	width: 1024,
-	height: 768,
+	type: Phaser.CANVAS,
+	pixelArt: true,
+	scale: {
+		parent: 'app',
+		width: 1024,
+		height: 768	
+	},
 	physics: {
 		default: 'arcade',
 		arcade: {
 			gravity: { y: 300 },
 			debug: true
 		},
-	},
-	scene: [Preload, FirstScene],
+	}
 }
+const game = new Phaser.Game(config)
 
-export default new Phaser.Game(config)
+//cenas
+game.scene.add('preloader', new Preloader())
+game.scene.add('menu', new Menu())
+
+//levels
+game.scene.add('easy', new Easy())
+
+//boot
+game.scene.start('preloader')

@@ -1,43 +1,30 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-empty-function */
-import Phaser from 'phaser'
+import Phaser from "phaser";
 
-export default class Preload extends Phaser.Scene {
+export default class Easy extends Phaser.Scene {
     private platforms?: Phaser.Physics.Arcade.StaticGroup
+
 	private player?: Phaser.Physics.Arcade.Sprite
+
 	private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
+
     private ground?: Phaser.GameObjects.TileSprite
+
     private PlayerPlatformsCollider?: Phaser.Physics.Arcade.Collider
+
     private labels?: Phaser.GameObjects.Text
-    //private scoreText?: Phaser.GameObjects.Text
-    private lifes:integer = 7
-    //private score:integer = 0
+
+    private lifes: integer = 0
 
     constructor() {
-		super('first-scene')
-    }
-    
-    preload() {
-        this.load.image('bgCastle', 'assets/background/bg_castle.png')
-        this.load.image('bgDesert', 'assets/background/bg_desert.png')
-        this.load.image('bgGrasslands', 'assets/background/bg_grasslands.png')
-
-        this.load.atlasXML('alienBeige', 'assets/atlas/aliens/alienBeige.png', 'assets/atlas/aliens/alienBeige.xml')
-        this.load.atlasXML('alienPink', 'assets/atlas/aliens/alienPink.png', 'assets/atlas/aliens/alienPink.xml')
-        this.load.atlasXML('alienGreen', 'assets/atlas/aliens/alienGreen.png', 'assets/atlas/aliens/alienGreen.xml')
-        this.load.atlasXML('alienBlue', 'assets/atlas/aliens/alienBlue.png', 'assets/atlas/aliens/alienBlue.xml')
-        this.load.atlasXML('alienYellow', 'assets/atlas/aliens/alienYellow.png', 'assets/atlas/aliens/alienYellow.xml')
-
-        this.load.image('grass', 'assets/ambient/grass/grass.png')
-        this.load.image('lava', 'assets/ambient/lava/liquidLava.png')
-        this.load.image('lavaTop', 'assets/ambient/lava/liquidLavaTop.png')
-        this.load.atlas('number', 'assets/UI/numbers/numbers.png', 'assets/UI/numbers/numbers.json')
+        super()
     }
 
+    preload(): void {
+        //local assets
+    }
 
-    create() {
-        this.lifes = 7;
-        //this.score = 0;
+    create(): void {
+        this.lifes = 7
         this.player = undefined;
         this.cursors = undefined;
 
@@ -95,7 +82,7 @@ export default class Preload extends Phaser.Scene {
             //criação
             const platform: Phaser.Physics.Arcade.StaticGroup = this.platforms.create(x, y, 'grass')
             const playerToOrder = this.physics.add.sprite(x, y-80, `alien${alienColors[alienKeys[i]]}`, `alien${alienColors[alienKeys[i]]}_stand.png`).setName(`${i}`)
-            const orderNumber = this.physics.add.sprite(playerToOrder.x, playerToOrder.y-70, 'number',`hud_${numerosAleatorios[i]}.png`)
+            const orderNumber = this.add.image(playerToOrder.x, playerToOrder.y-70, 'number',`hud_${numerosAleatorios[i]}.png`)
             
             //physics
             playerToOrder.setState('')
@@ -106,55 +93,9 @@ export default class Preload extends Phaser.Scene {
             this.physics.add.overlap(playerToOrder, this.player, () => this.handleOverlap(playerToOrder))
         }
 
-        this.anims.create(
-            {
-             key: 'walk',
-             frames: this.anims.generateFrameNames('alienBeige', {
-                 prefix: 'alienBeige_walk',
-                 suffix:'.png',
-                 start: 1,
-                 end: 2
-             }),
-             frameRate: 5,
-             repeat: -1
-            }
-         )
-    
-        this.anims.create(
-            {
-            key: 'turn',
-            frames: [
-            { key: 'alienBeige', frame: 'alienBeige_stand.png'}
-            ],
-            frameRate: 5,
-            repeat: -1
-            }
-        )
-
-        this.anims.create(
-            {
-            key: 'jump',
-            frames: [
-            { key: 'alienBeige', frame: 'alienBeige_jump.png' }
-            ],
-            frameRate: 5,
-            repeat: -1
-            }
-        )
-        
-        this.anims.create(
-            {
-            key: 'duck',
-            frames: [
-            { key: 'alienBeige', frame: 'alienBeige_hurt.png' }
-            ],
-            frameRate: 5,
-            repeat: -1
-            }
-        )
     }
 
-    update() {
+    update(): void {
         if (!this.cursors) {
 			return
 		} 
@@ -193,42 +134,37 @@ export default class Preload extends Phaser.Scene {
         this.labels?.setText(`Life: ${this.lifes}`)
     }
 
-    restart() {
-
-    }
-
-    //Fisher–Yates shuffle
-    shuffleNumeros(array:integer[]){
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-          }
-          return array;
-    }
-
-    handleOverlap(playerToOrder:Phaser.Types.Physics.Arcade.SpriteWithDynamicBody) {
-        if(this.cursors?.space.isDown) {
-            this.lifes--
-            playerToOrder.setVelocityY(-200)
-            //this.player?.setState('morto')
-            this.PlayerPlatformsCollider?.update() //TODO
+        //Fisher–Yates shuffle
+        shuffleNumeros(array:integer[]): Array<integer> {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+              }
+              return array;
         }
-    }
-
-    handleDeathLava(player:Phaser.Physics.Arcade.Sprite) {
-        this.lifes = 0
-        
-        player.setState('morto')
-        player.setVelocityY(0)
-        player.setTint(0xff0000)
-
-
-        this.time.addEvent({
-            delay: 1000,
-            callback: ()=>{
-                this.scene.start('preload')
-            }, 
-            loop: false
-        })
-     }
+    
+        handleOverlap(playerToOrder:Phaser.Types.Physics.Arcade.SpriteWithDynamicBody): void {
+            if(this.cursors?.space.isDown) {
+                this.lifes--
+                playerToOrder.setVelocityY(-200)
+                //this.player?.setState('morto')
+                this.PlayerPlatformsCollider?.update() //TODO
+            }
+        }
+    
+        handleDeathLava(player:Phaser.Physics.Arcade.Sprite): void {
+            this.lifes = 0
+            
+            player.setState('morto')
+            player.setVelocityY(-10)
+            player.setTint(0xff0000)
+    
+            this.time.addEvent({
+                delay: 1000,
+                callback: ()=>{
+                    this.scene.start('menu')
+                }, 
+                loop: false
+            })
+         }
 }

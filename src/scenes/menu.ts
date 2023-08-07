@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
 
 export default class Preload extends Phaser.Scene {
+    private bg?: Phaser.GameObjects.TileSprite
 
     constructor() {
 		super()
@@ -12,7 +13,7 @@ export default class Preload extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(this.scale.width/2, this.scale.height/2,'bg').setScale(1.5) //background
+        this.bg = this.add.tileSprite(this.scale.width/2, this.scale.height, this.scale.width, this.scale.height,'bg').setScale(2) //background
         this.add.dynamicBitmapText(180, 700, 'ice', 'Aperte qualquer tecla para iniciar', 50).setScale(0.7)
 
         const tintedText = this.add.dynamicBitmapText(270, 64, 'ice', '- WAJD -', 128); 
@@ -20,11 +21,15 @@ export default class Preload extends Phaser.Scene {
 
         this.input.keyboard?.on('keydown', () => {
             this.scene.start('easy')
-        })       
+        })
     }
 
     update() {
-        ///TODO: parallaxcanvas
+        if(!this.bg) {
+            return
+        }
+
+        this.bg.tilePositionX -= 1;
     }
 
 }

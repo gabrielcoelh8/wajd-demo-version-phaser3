@@ -13,12 +13,14 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('bgDesert', 'assets/background/bg_desert.png')
         this.load.image('bgGrasslands', 'assets/background/bg_grasslands.png')
 
+        this.load.atlas('kamila', 'assets/atlas/kamila/kamila.png', 'assets/atlas/kamila/kamila.json')
         this.load.atlasXML('alienBeige', 'assets/atlas/aliens/alienBeige.png', 'assets/atlas/aliens/alienBeige.xml')
         this.load.atlasXML('alienPink', 'assets/atlas/aliens/alienPink.png', 'assets/atlas/aliens/alienPink.xml')
         this.load.atlasXML('alienGreen', 'assets/atlas/aliens/alienGreen.png', 'assets/atlas/aliens/alienGreen.xml')
         this.load.atlasXML('alienBlue', 'assets/atlas/aliens/alienBlue.png', 'assets/atlas/aliens/alienBlue.xml')
         this.load.atlasXML('alienYellow', 'assets/atlas/aliens/alienYellow.png', 'assets/atlas/aliens/alienYellow.xml')
 
+        this.load.atlasXML('tiles', 'assets/ambient/tiles_spritesheet.png', 'assets/ambient/tiles_spritesheet.xml')
         this.load.image('grass', 'assets/ambient/grass/grass.png')
         this.load.image('lava', 'assets/ambient/lava/liquidLava.png')
         this.load.image('lavaTop', 'assets/ambient/lava/liquidLavaTop.png')

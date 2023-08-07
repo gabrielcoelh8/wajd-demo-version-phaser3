@@ -1,0 +1,162 @@
+{
+	"frames": [
+		{
+			"filename": "kamila0.png",
+			"frame": {
+				"x": 1,
+				"y": 1,
+				"w": 720,
+				"h": 1080
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 720,
+				"h": 1080
+			},
+			"sourceSize": {
+				"w": 720,
+				"h": 1080
+			}
+		},
+		{
+			"filename": "kamila1.png",
+			"frame": {
+				"x": 723,
+				"y": 1,
+				"w": 720,
+				"h": 1080
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 720,
+				"h": 1080
+			},
+			"sourceSize": {
+				"w": 720,
+				"h": 1080
+			}
+		},
+		{
+			"filename": "kamila2.png",
+			"frame": {
+				"x": 1445,
+				"y": 1,
+				"w": 720,
+				"h": 1080
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 720,
+				"h": 1080
+			},
+			"sourceSize": {
+				"w": 720,
+				"h": 1080
+			}
+		},
+		{
+			"filename": "kamila3.png",
+			"frame": {
+				"x": 1,
+				"y": 1083,
+				"w": 720,
+				"h": 1080
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 720,
+				"h": 1080
+			},
+			"sourceSize": {
+				"w": 720,
+				"h": 1080
+			}
+		},
+		{
+			"filename": "kamila4.png",
+			"frame": {
+				"x": 723,
+				"y": 1083,
+				"w": 720,
+				"h": 1080
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 720,
+				"h": 1080
+			},
+			"sourceSize": {
+				"w": 720,
+				"h": 1080
+			}
+		},
+		{
+			"filename": "kamila5.png",
+			"frame": {
+				"x": 1445,
+				"y": 1083,
+				"w": 720,
+				"h": 1080
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 720,
+				"h": 1080
+			},
+			"sourceSize": {
+				"w": 720,
+				"h": 1080
+			}
+		},
+		{
+			"filename": "kamila6.png",
+			"frame": {
+				"x": 2167,
+				"y": 1,
+				"w": 720,
+				"h": 1080
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 720,
+				"h": 1080
+			},
+			"sourceSize": {
+				"w": 720,
+				"h": 1080
+			}
+		}
+	],
+	"meta": {
+		"app": "http://www.codeandweb.com/texturepacker",
+		"version": "1.0",
+		"image": "spritesheet.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 2888,
+			"h": 2164
+		},
+		"scale": "1"
+	}
+}

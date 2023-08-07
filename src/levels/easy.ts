@@ -56,7 +56,7 @@ export default class Easy extends Phaser.Scene {
         this.player.setDepth(1)
         this.player.setBounce(0.1)
         this.player.setSize(50, 90)
-        this.player.setCollideWorldBounds(true)
+        this.player.setCollideWorldBounds(false)
         this.playerPlatformCollider = this.physics.add.collider(this.player, this.platforms)
         
         //overlap com a lava
@@ -97,7 +97,7 @@ export default class Easy extends Phaser.Scene {
             //physics
             playerToOrder.setState('')
             playerToOrder.setBounce(0.7)
-            playerToOrder.setCollideWorldBounds(true)
+            playerToOrder.setCollideWorldBounds(false)
             playerToOrder.setState('down')
 
             this.playerPlatformCollider = this.physics.add.collider(playerToOrder, this.platforms)
@@ -137,8 +137,8 @@ export default class Easy extends Phaser.Scene {
             this.player?.anims.play('jump')
 		}
 
-        if(this.cursors.up?.isDown && this.player.state!=='morto' && this.grabUp) {
-			this.player?.setVelocityY(-400)
+        if(this.cursors.up?.isDown && this.player?.body?.touching.down && this.player.state!=='morto' && this.grabUp) {
+			this.player?.setVelocityY(-420)
             this.player?.anims.play('jump')
 		}
 

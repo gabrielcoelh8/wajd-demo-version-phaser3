@@ -1,5 +1,5 @@
 import { HEALTH_EVENTS } from '../components/events';
-import Health from '../components/vida';
+import Health from '../components/health';
 
 const ASSET_KEY = 'ASSET_KEY';
 

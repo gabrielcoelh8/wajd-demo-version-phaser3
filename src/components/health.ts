@@ -26,4 +26,11 @@ export default class Vida {
     this.#currentHealth -= 1;
     this.#customEventEmitter.emit(HEALTH_EVENTS.LOSE_HEALTH, this.#currentHealth, this.#currentHealth + 1);
   }
+
+  public fallDeath(): void {
+    while (this.#currentHealth > 0) {
+      this.#currentHealth -= 1;
+      this.#customEventEmitter.emit(HEALTH_EVENTS.LOSE_HEALTH, this.#currentHealth, this.#currentHealth + 1);
+    }
+  }
 }

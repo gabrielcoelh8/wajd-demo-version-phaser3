@@ -8,7 +8,7 @@ const HEALTH_ANIMATIONS = {
   LOSE_SECOND_HALF: 'LOSE_SECOND_HALF',
 } as const;
 
-export class Ui extends Phaser.Scene {
+export default class Life extends Phaser.Scene {
   #customEventEmitter: Phaser.Events.EventEmitter;
   #health: Health;
 
@@ -19,7 +19,7 @@ export class Ui extends Phaser.Scene {
   }
 
   preload(): void {
-    this.load.spritesheet(ASSET_KEY, 'assets/images/heart.png', {
+    this.load.spritesheet(ASSET_KEY, 'assets/UI/hearts/heart.png', {
       frameWidth: 7,
       frameHeight: 7,
     });
@@ -42,8 +42,8 @@ export class Ui extends Phaser.Scene {
     const hearts: Phaser.GameObjects.Sprite[] = [];
     for (let i = 0; i < numberOfHearts; i++) {
       const heart = this.add
-        .sprite(10 + i * 63, 10, ASSET_KEY, 0)
-        .setScale(8)
+        .sprite(10 + i * 43, 10, ASSET_KEY, 0)
+        .setScale(5)
         .setOrigin(0);
       hearts.push(heart);
     }

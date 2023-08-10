@@ -2,8 +2,8 @@ import Phaser from 'phaser'
 import Menu from './scenes/menu'
 import Preloader from './scenes/preloader'
 import Easy from './levels/easy'
-import Health from './components/health'
-import Life from './scenes/life'
+import HealthController from './components/healthController'
+import Health from './scenes/health'
 
 export const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.CANVAS,
@@ -24,16 +24,15 @@ export const config: Phaser.Types.Core.GameConfig = {
 }
 const game = new Phaser.Game(config)
 const customEmitter = new Phaser.Events.EventEmitter();
-const customLifeScene = new Health(customEmitter);
-
+const customLifeScene = new HealthController(customEmitter);
 
 //cenas
 game.scene.add('preloader', new Preloader())
 game.scene.add('menu', new Menu())
 
 //levels
-game.scene.add('life', new Life(customEmitter, customLifeScene))
-game.scene.add('easy', new Easy(customLifeScene))
+game.scene.add('health_ui', new Health(customEmitter, customLifeScene))
+game.scene.add('easy_level', new Easy(customLifeScene))
 
 //boot
 game.scene.start('preloader')

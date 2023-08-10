@@ -31,7 +31,8 @@ export default class Preload extends Phaser.Scene {
         tintedText.setScale(0.7).setDepth(-3.5)
 
         this.input.keyboard?.on('keydown', () => {
-            this.scene.start('easy')
+            this.scene.start('health_ui')
+            this.scene.start('easy_level')
         })
     }
 

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Phaser from "phaser";
-import Health from '../components/health'
+import Health from '../components/healthController'
 
 export default class Easy extends Phaser.Scene {
-    private CHAR_GRAVITY = 300;
+    //private CHAR_GRAVITY = 300;
 
     private MAIN_CHAR_KEY = 'alienBeige'
 
@@ -13,7 +13,7 @@ export default class Easy extends Phaser.Scene {
 
     //private playersToOrder?: Phaser.Physics.Arcade.Group
     
-    private playerPlatformCollider?: Phaser.Physics.Arcade.Collider
+    private playerPlatform_Collider?: Phaser.Physics.Arcade.Collider
 
     //private playerToOrderPlatformCollider?: Phaser.Physics.Arcade.Collider
 
@@ -27,7 +27,7 @@ export default class Easy extends Phaser.Scene {
 
     private playerUp?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
 
-    private lifes: integer = 7
+    private lifes: integer = 0
 
     private grabUp = false
 
@@ -40,6 +40,8 @@ export default class Easy extends Phaser.Scene {
     private foreground!: Phaser.GameObjects.TileSprite
 
     private zoneOfDeath!: Phaser.GameObjects.Zone
+
+    private camera!: Phaser.Cameras.Scene2D.Camera
     
     #health: Health;
     
@@ -54,22 +56,21 @@ export default class Easy extends Phaser.Scene {
         this.load.image('bg_alt', 'assets/background/parallax/v2/bg_alt.png')
     }
 
-    restart() {
-        this.player.state = 'alive'
-    }
 
     create(): void {
+        this.#health.init()
+        
         const GAME = {
             WIDTH: this.sys.game.config.width as number,
             HEIGHT: this.sys.game.config.height as number,
         }
+
         const point_x = -500
         const point_y = 400
 
         this.cursors = this.input.keyboard?.createCursorKeys()
-        this.physics.world.setBounds(0, 0, GAME.WIDTH, GAME.HEIGHT*2, false, false, false, true) ///collision only on down
-        this.lifes = 7
-
+        this.physics.world.setBounds(0, 0, GAME.WIDTH, GAME.HEIGHT+200, false, false, true, true) ///collision only on down
+        
         const player = this.physics.add.sprite(point_x, point_y-80, this.MAIN_CHAR_KEY)
         const platforms = this.physics.add.staticGroup()
         const playersToOrder = this.physics.add.group()
@@ -95,10 +96,15 @@ export default class Easy extends Phaser.Scene {
         sprites configuration
         */
         //this.background = this.add.tileSprite(0, GAME.HEIGHT/2, GAME.WIDTH*2, GAME.HEIGHT, 'bg_alt').setScale(1)  ////'parallax2', 'skill-desc_0003_bg.png'
-        this.farBuildings = this.add.tileSprite(0, 450, GAME.WIDTH, 142, 'parallax2', 'skill-desc_0002_far-buildings.png').setScale(3)
-        this.buildings = this.add.tileSprite(0, 500, GAME.WIDTH, 142, 'parallax2', 'skill-desc_0001_buildings.png').setScale(3)
-        this.foreground = this.add.tileSprite(0, 900, GAME.WIDTH, 142, 'parallax2', 'skill-desc_0000_foreground.png').setScale(3) 
+        this.farBuildings = this.add.tileSprite(0, 0, GAME.WIDTH, 142, 'parallax2', 'skill-desc_0002_far-buildings.png').setScale(3)
+        this.buildings = this.add.tileSprite(0, 0, GAME.WIDTH, 142, 'parallax2', 'skill-desc_0001_buildings.png').setScale(3)
+        this.foreground = this.add.tileSprite(0, 0, GAME.WIDTH, 142, 'parallax2', 'skill-desc_0000_foreground.png').setScale(3) 
         
+        //initial position
+        this.farBuildings.setY(550)
+        this.buildings.setY(750)
+        this.foreground.setY(900)
+
         //this.background.setDepth(-3)
         this.farBuildings.setDepth(-2)
         this.buildings.setDepth(-1) 
@@ -118,13 +124,13 @@ export default class Easy extends Phaser.Scene {
         /*
         vidas label TODO: HEART
         */
-        this.labels = this.add.text(10, 500, `Debug: ${this.lifes}`).setScrollFactor(0)
+        this.labels = this.add.text(10, 500, "").setScrollFactor(0)
         this.labels.setShadow(1, 1, '#000000', 2)
         this.labels.setDepth(3)
 
-        this.input.on(Phaser.Input.Events.POINTER_DOWN as string, 
+        this.input.on(Phaser.Input.Events.POINTER_DOWN as string,  
             () => {
-            this.#health.loseHealth();
+            this.#health.loseHealth(); 
         });
 
         /*
@@ -155,7 +161,7 @@ export default class Easy extends Phaser.Scene {
         /*
         collision and overlap calls
         */
-        this.playerPlatformCollider = this.physics.add.collider(player, platforms)
+        this.playerPlatform_Collider = this.physics.add.collider(player, platforms)
         
         playersToOrder.getChildren().forEach((playerToOrder)=>{
             const _playerToOrder = playerToOrder as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
@@ -172,26 +178,45 @@ export default class Easy extends Phaser.Scene {
         camera
         */
         this.player = player
-        this.cameras.main.setBounds(-GAME.WIDTH, 0, GAME.WIDTH*2, GAME.HEIGHT+200)
+        this.player.state = 'alive'
+        this.camera = this.cameras.main.setBounds(-GAME.WIDTH, 0, GAME.WIDTH*2, GAME.HEIGHT+200)
         this.cameras.main.startFollow(this.player, true, 0.5, 0.5)
     }
 
     update(): void {
-        this.labels?.setText(`Debug: ${this.#health.currentHealth}`)
+        this.labels?.setText(`{Debug} 
+        lifes:${this.#health.currentHealth}
+        camera.x: ${this.cameras.main.scrollX}
+        camera.y: ${this.cameras.main.scrollY}
+        player_state: ${this.player.state}
+        grabUp: ${this.grabUp}
+        player_X: ${this.player.body?.x}
+        player_Y: ${this.player.body?.y}
+        player_velocityX: ${this.player.body?.velocity.x}
+        player_velocityY: ${this.player.body?.velocity.y}
+        `)
+
+        this.lifes = this.#health.currentHealth
 
         /////TODO: ERROR IN PHYSICS
-        if (!this.cursors) {
+        if (!this.cursors || !this.player.body) {
 			return
 		} 
         else if (this.cursors.left?.isDown) {
 			this.player?.setVelocityX(-160)
             this.player?.setFlipX(true)
 			this.player?.anims.play(`${this.MAIN_CHAR_KEY}_walk`, true)
+            this.farBuildings.tilePositionX -= 1.2
+            this.buildings.tilePositionX -= 0.7
+            this.foreground.tilePositionX -= 0.03
 		} 
 		else if (this.cursors.right?.isDown) {
 			this.player?.setVelocityX(160)
             this.player?.setFlipX(false)
 			this.player?.anims.play(`${this.MAIN_CHAR_KEY}_walk`, true)
+            this.farBuildings.tilePositionX += 1.2
+            this.buildings.tilePositionX += 0.7
+            this.foreground.tilePositionX += 0.03
 		}
         else if (this.cursors.down?.isDown) {
 			this.player?.anims.play(`${this.MAIN_CHAR_KEY}_duck`, true)
@@ -218,16 +243,17 @@ export default class Easy extends Phaser.Scene {
         }
 
         //death
-        switch(this.player?.state) {
-            case 'falling':
-                //this.player.anims.play('duck', true)
-                this.player.setVelocityY(500);
-            break;
+        if (!this.player?.body?.blocked.down && this.player?.body?.velocity.y > 0 && this.camera.scrollY>0 && this.player.body.y < 800) {
+            this.player.setState('falling')
+            //const var_farBuildings =  this.farBuildings.y + 0.5;
+            //this.farBuildings.setY(var_farBuildings)
+            //const var_buildings = this.buildings.y + 1.7;
+            //this.buildings.setY(var_buildings)
         }
     }
 
     //Fisher–Yates shuffle
-    shuffleNumeros(array:integer[]): Array<integer> {
+    shuffleNumeros(array:integer[]): Array<integer> {  
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [array[i], array[j]] = [array[j], array[i]];
@@ -267,18 +293,30 @@ export default class Easy extends Phaser.Scene {
     }
     
     handleDeathFall(_player:Phaser.Physics.Arcade.Sprite): void {
-        this.lifes = 0
+        this.grabUp = false
 
-        _player.setState('falling')
-        _player.setVelocityY(0)
         _player.setAlpha(0.5)
 
-        this.time.addEvent({
-            delay: 1000,
-            callback: () => {
-                this.scene.start('menu')
-                }, 
-            loop: false
-        })
+        /*
+        if (this.#health.currentHealth > 0) {
+            this.time.addEvent({
+                delay: 100,
+                callback: () => {
+                    this.#health.loseHealth()
+                    },
+                loop: true
+            })
+        }
+
+        if(this.#health.currentHealth == 0) {
+            this.time.addEvent({
+                delay: 1000,
+                callback: () => {
+                    this.scene.pause('health_ui')
+                    this.scene.start('menu')
+                    },
+                loop: false
+            })
+        }*/
     }
 }

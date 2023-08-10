@@ -1,6 +1,6 @@
 import { HEALTH_EVENTS } from './events';
 
-export default class Vida {
+export default class HealthController {
   #customEventEmitter: Phaser.Events.EventEmitter;
   #currentHealth: number;
   #maxHealth: number;
@@ -19,6 +19,10 @@ export default class Vida {
     return this.#currentHealth;
   }
 
+  set setCurrentHealth(health: number) {
+    this.#currentHealth = health
+  }
+
   public loseHealth(): void {
     if (this.#currentHealth === 0) {
       return;
@@ -27,10 +31,7 @@ export default class Vida {
     this.#customEventEmitter.emit(HEALTH_EVENTS.LOSE_HEALTH, this.#currentHealth, this.#currentHealth + 1);
   }
 
-  public fallDeath(): void {
-    while (this.#currentHealth > 0) {
-      this.#currentHealth -= 1;
-      this.#customEventEmitter.emit(HEALTH_EVENTS.LOSE_HEALTH, this.#currentHealth, this.#currentHealth + 1);
-    }
+  public init(): void {
+    this.#currentHealth = 6
   }
 }

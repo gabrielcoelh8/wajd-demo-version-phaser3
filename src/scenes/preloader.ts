@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import Phaser from 'phaser'
-
 export default class Preloader extends Phaser.Scene {
     private MAIN_CHAR = {
         KEY: 'alienBeige',
@@ -22,6 +21,12 @@ export default class Preloader extends Phaser.Scene {
             'duck'
         ]
     }
+    private ASSET_KEY = 'ASSET_KEY';
+
+    private HEALTH_ANIMATIONS = {
+        LOSE_FIRST_HALF: 'LOSE_FIRST_HALF',
+        LOSE_SECOND_HALF: 'LOSE_SECOND_HALF',
+    } as const;
 
     constructor() {
 		super()
@@ -48,7 +53,12 @@ export default class Preloader extends Phaser.Scene {
         this.load.image('lava', 'assets/ambient/lava/liquidLava.png')
         this.load.image('lavaTop', 'assets/ambient/lava/liquidLavaTop.png')
         
-        this.load.atlas('number', 'assets/UI/numbers/numbers.png', 'assets/UI/numbers/numbers.json')   
+        this.load.atlas('number', 'assets/UI/numbers/numbers.png', 'assets/UI/numbers/numbers.json')
+
+        this.load.spritesheet(this.ASSET_KEY, 'assets/UI/hearts/heart.png', {
+            frameWidth: 7,
+            frameHeight: 7,
+          });
     }
 
     create() {
@@ -57,6 +67,7 @@ export default class Preloader extends Phaser.Scene {
         //global anims
         this.createMainCharAnims()
         this.createOthersCharAnims()
+        this.createHealthAnims()
     }
 
     createMainCharAnims() {
@@ -111,5 +122,20 @@ export default class Preloader extends Phaser.Scene {
                 }
             )
         })
+    }
+
+    createHealthAnims() {
+        this.anims.create({
+            key: this.HEALTH_ANIMATIONS.LOSE_FIRST_HALF,
+            frames: this.anims.generateFrameNumbers(this.ASSET_KEY, { start: 0, end: 2 }),
+            frameRate: 10,
+            delay: 100
+          });
+      
+          this.anims.create({
+            key: this.HEALTH_ANIMATIONS.LOSE_SECOND_HALF,
+            frames: this.anims.generateFrameNumbers(this.ASSET_KEY, { start: 2, end: 4 }),
+            frameRate: 10,
+          });
     }
 }

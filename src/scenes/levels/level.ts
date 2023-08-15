@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Phaser from "phaser";
-import Health from '../components/healthController'
+import Health from '../../components/healthController'
 
 export default class Easy extends Phaser.Scene {
     //private CHAR_GRAVITY = 300;
@@ -59,27 +59,23 @@ export default class Easy extends Phaser.Scene {
 
     create(): void {
         this.#health.init()
-        
-        const GAME = {
-            WIDTH: this.sys.game.config.width as number,
-            HEIGHT: this.sys.game.config.height as number,
-        }
+        const { width, height } = this.scale
 
         const point_x = -500
         const point_y = 400
 
         this.cursors = this.input.keyboard?.createCursorKeys()
-        this.physics.world.setBounds(0, 0, GAME.WIDTH, GAME.HEIGHT+200, false, false, true, true) ///collision only on down
+        this.physics.world.setBounds(0, 0, width, height+200, false, false, true, true) ///collision only on down
         
         const player = this.physics.add.sprite(point_x, point_y-80, this.MAIN_CHAR_KEY)
         const platforms = this.physics.add.staticGroup()
         const playersToOrder = this.physics.add.group()
         const numbersToOrder = this.physics.add.staticGroup()
         const filter = this.make.renderTexture({
-            width: GAME.WIDTH*2,
-            height: GAME.HEIGHT*2, 
+            width: width*2,
+            height: height*2, 
             x: 0,
-            y: GAME.HEIGHT/2
+            y: height/2
         }, true)
         const numberOfVariables = 4
         const numeros = Array.from({ length: numberOfVariables }, (_, index) => index); //array de 0 ao tamanho da variável acima
@@ -96,9 +92,9 @@ export default class Easy extends Phaser.Scene {
         sprites configuration
         */
         //this.background = this.add.tileSprite(0, GAME.HEIGHT/2, GAME.WIDTH*2, GAME.HEIGHT, 'bg_alt').setScale(1)  ////'parallax2', 'skill-desc_0003_bg.png'
-        this.farBuildings = this.add.tileSprite(0, 0, GAME.WIDTH, 142, 'parallax2', 'skill-desc_0002_far-buildings.png').setScale(3)
-        this.buildings = this.add.tileSprite(0, 0, GAME.WIDTH, 142, 'parallax2', 'skill-desc_0001_buildings.png').setScale(3)
-        this.foreground = this.add.tileSprite(0, 0, GAME.WIDTH, 142, 'parallax2', 'skill-desc_0000_foreground.png').setScale(3) 
+        this.farBuildings = this.add.tileSprite(0, 0, width, 142, 'parallax2', 'skill-desc_0002_far-buildings.png').setScale(3)
+        this.buildings = this.add.tileSprite(0, 0, width, 142, 'parallax2', 'skill-desc_0001_buildings.png').setScale(3)
+        this.foreground = this.add.tileSprite(0, 0, width, 142, 'parallax2', 'skill-desc_0000_foreground.png').setScale(3) 
         
         //initial position
         this.farBuildings.setY(550)
@@ -171,7 +167,7 @@ export default class Easy extends Phaser.Scene {
             this.physics.add.overlap(player, playerToOrder, () => this.handleOverlapUp(player, _playerToOrder, numberOf))
             }
         )
-        this.zoneOfDeath = this.add.zone(0, GAME.HEIGHT+250, GAME.WIDTH*2, 800);
+        this.zoneOfDeath = this.add.zone(0, height+250, width*2, 800);
         this.physics.add.existing(this.zoneOfDeath, true);
         this.physics.add.overlap(player, this.zoneOfDeath, () => this.handleDeathFall(player))
         /*
@@ -179,11 +175,12 @@ export default class Easy extends Phaser.Scene {
         */
         this.player = player
         this.player.state = 'alive'
-        this.camera = this.cameras.main.setBounds(-GAME.WIDTH, 0, GAME.WIDTH*2, GAME.HEIGHT+200)
+        this.camera = this.cameras.main.setBounds(-width, 0, width*2, height+200)
         this.cameras.main.startFollow(this.player, true, 0.5, 0.5)
     }
 
-    update(): void {
+    update(_time: number, _delta: number): void {
+        /////////////////////
         this.labels?.setText(`{Debug} 
         lifes:${this.#health.currentHealth}
         camera.x: ${this.cameras.main.scrollX}
@@ -194,8 +191,10 @@ export default class Easy extends Phaser.Scene {
         player_Y: ${this.player.body?.y}
         player_velocityX: ${this.player.body?.velocity.x}
         player_velocityY: ${this.player.body?.velocity.y}
+        time: ${_time}
+        delta: ${_delta}
         `)
-
+        ///////////////////
         this.lifes = this.#health.currentHealth
 
         /////TODO: ERROR IN PHYSICS

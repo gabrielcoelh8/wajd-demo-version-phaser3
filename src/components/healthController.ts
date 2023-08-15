@@ -1,4 +1,4 @@
-import { HEALTH_EVENTS } from './events';
+import { HEALTH_EVENTS } from '../util/events';
 
 export default class HealthController {
   #customEventEmitter: Phaser.Events.EventEmitter;

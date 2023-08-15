@@ -16,6 +16,7 @@
 		"vite": "^3.1.0"
 	},
 	"dependencies": {
-		"phaser": "^3.60.0"
+		"phaser": "^3.60.0",
+		"short-uuid": "^4.2.2"
 	}
 }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { HEALTH_EVENTS } from '../components/events';
+import { HEALTH_EVENTS } from '../util/events';
 import Health from '../components/healthController';
 
 const ASSET_KEY = 'ASSET_KEY';

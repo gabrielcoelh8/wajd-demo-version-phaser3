@@ -2,7 +2,7 @@ import Phaser from 'phaser'
 import Menu from './Phaser/scenes/menu'
 import Preloader from './Phaser/scenes/bootstrap'
 import Easy from './Phaser/scenes/levels/main'
-import HealthController from './Phaser/component/healthController'
+import HealthController from './Phaser/system/HealthSystem'
 import Health from './Phaser/scenes/interface'
 
 export const config: Phaser.Types.Core.GameConfig = {

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Phaser from "phaser";
-import Health from '../../component/healthController'
+import PlayerMovement from "../../component/PlayerMovement";
+import Health from '../../system/HealthSystem'
 
 export default class Easy extends Phaser.Scene {
     //private CHAR_GRAVITY = 300;
@@ -19,7 +20,7 @@ export default class Easy extends Phaser.Scene {
 
 	private player!: Phaser.Physics.Arcade.Sprite
 
-	private cursors?: Phaser.Types.Input.Keyboard.CursorKeys
+	private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
 
     private labels?: Phaser.GameObjects.Text
 
@@ -44,6 +45,7 @@ export default class Easy extends Phaser.Scene {
     private camera!: Phaser.Cameras.Scene2D.Camera
     
     #health: Health;
+    #playerMovement!: PlayerMovement
     
     constructor(health: Health) {
         super()
@@ -64,7 +66,7 @@ export default class Easy extends Phaser.Scene {
         const point_x = -500
         const point_y = 400
 
-        this.cursors = this.input.keyboard?.createCursorKeys()
+        
         this.physics.world.setBounds(0, 0, width, height+200, false, false, true, true) ///collision only on down
         
         const player = this.physics.add.sprite(point_x, point_y-80, this.MAIN_CHAR_KEY)
@@ -127,7 +129,7 @@ export default class Easy extends Phaser.Scene {
         this.input.on(Phaser.Input.Events.POINTER_DOWN as string,  
             () => {
             this.#health.loseHealth(); 
-        });
+        }, this);
 
         /*
         platform and alien to order
@@ -173,9 +175,16 @@ export default class Easy extends Phaser.Scene {
         /*
         camera
         */
+        if(!this.input.keyboard) {
+            return
+        }
+
         this.player = player
-        this.player.state = 'alive'
-        this.camera = this.cameras.main.setBounds(-width, 0, width*2, height+200)
+        this.cursors = this.input.keyboard.createCursorKeys()
+        this.#playerMovement = new PlayerMovement(this.cursors)
+        this.#playerMovement.init(player)
+
+        this.camera = this.cameras.main
         this.cameras.main.startFollow(this.player, true, 0.5, 0.5)
     }
 
@@ -196,59 +205,7 @@ export default class Easy extends Phaser.Scene {
         `)
         ///////////////////
         this.lifes = this.#health.currentHealth
-
-        /////TODO: ERROR IN PHYSICS
-        if (!this.cursors || !this.player.body) {
-			return
-		} 
-        else if (this.cursors.left?.isDown) {
-			this.player?.setVelocityX(-160)
-            this.player?.setFlipX(true)
-			this.player?.anims.play(`${this.MAIN_CHAR_KEY}_walk`, true)
-            this.farBuildings.tilePositionX -= 1.2
-            this.buildings.tilePositionX -= 0.7
-            this.foreground.tilePositionX -= 0.03
-		} 
-		else if (this.cursors.right?.isDown) {
-			this.player?.setVelocityX(160)
-            this.player?.setFlipX(false)
-			this.player?.anims.play(`${this.MAIN_CHAR_KEY}_walk`, true)
-            this.farBuildings.tilePositionX += 1.2
-            this.buildings.tilePositionX += 0.7
-            this.foreground.tilePositionX += 0.03
-		}
-        else if (this.cursors.down?.isDown) {
-			this.player?.anims.play(`${this.MAIN_CHAR_KEY}_duck`, true)
-		}
-		else {
-			this.player?.setVelocityX(0)
-			this.player?.anims.play(`${this.MAIN_CHAR_KEY}_stand`, true)
-		}
-
-		//jump
-		if(this.cursors.up?.isDown && this.player?.body?.blocked.down) {
-			this.player?.setVelocityY(-250)
-            this.player?.anims.play(`${this.MAIN_CHAR_KEY}_walk`)
-		}
-
-        if(this.cursors.up?.isDown && this.player.state!=='falling' && this.grabUp) {
-			this.player?.setVelocityY(-300)
-            this.player?.anims.play(`${this.MAIN_CHAR_KEY}_stand`)
-		}
-
-        //grab behavior
-        if (this.grabUp && this.playerUp && this.cursors?.space.isDown) {
-            this.playerUp.x = this.player.x
-        }
-
-        //death
-        if (!this.player?.body?.blocked.down && this.player?.body?.velocity.y > 0 && this.camera.scrollY>0 && this.player.body.y < 800) {
-            this.player.setState('falling')
-            //const var_farBuildings =  this.farBuildings.y + 0.5;
-            //this.farBuildings.setY(var_farBuildings)
-            //const var_buildings = this.buildings.y + 1.7;
-            //this.buildings.setY(var_buildings)
-        }
+        this.#playerMovement.update(_delta)
     }
 
     //Fisher–Yates shuffle

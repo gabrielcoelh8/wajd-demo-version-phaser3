@@ -62,8 +62,10 @@ export default class Preloader extends Phaser.Scene {
     }
 
     create() {
-        this.scene.start('menu')
-
+        //this.scene.start('menu')
+        this.scene.start('health_ui')
+        this.scene.start('easy_level')
+        
         //global anims
         this.createMainCharAnims()
         this.createOthersCharAnims()

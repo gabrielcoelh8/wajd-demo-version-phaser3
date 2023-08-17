@@ -7,7 +7,7 @@ type AnimationData = {
     right: {key: string, flip?: boolean},
     up: {key: string, flip?: boolean},
     down: {key: string, flip?: boolean},
-    none: {key: string, flip?: boolean}
+    idle: {key: string, flip?: boolean}
 }
 
 export default class AnimsController implements IComponent {
@@ -27,11 +27,12 @@ export default class AnimsController implements IComponent {
     update(_delta: number) {
         if(this.cursors.left.isDown) {
             const { key, flip } = this.data.left
+            
             this.gameObject.play(key)
             this.gameObject.setFlipX(!!flip)
         } else {
             const direction = this.gameObject.anims.currentAnim?.key.split('-')[1] //get direction based on anims key fixes
-            this.gameObject.play(`${this.data.none.key}-${direction}`, true) //play anims idle for specify direction
+            this.gameObject.play(`${this.data.idle.key}-${direction}`, true) //play anims idle for specify direction
         }
     }
 }

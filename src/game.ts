@@ -1,28 +1,29 @@
 import Phaser from 'phaser'
-import Menu from './scenes/menu'
-import Preloader from './scenes/preloader'
-import Easy from './scenes/levels/level'
-import HealthController from './components/healthController'
-import Health from './scenes/health'
+import Menu from './Phaser/scenes/menu'
+import Preloader from './Phaser/scenes/bootstrap'
+import Easy from './Phaser/scenes/levels/main'
+import HealthController from './Phaser/component/healthController'
+import Health from './Phaser/scenes/interface'
 
 export const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.CANVAS,
 	pixelArt: true,
 	scale: {
-		parent: 'app',
+		parent: 'game-container',
 		width: 1024,
-		height: 768	
+		height: 768
 	},
 	physics: {
 		default: 'arcade',
 		arcade: {
-			gravity: { y: 300 },
+			gravity: { y: 500 },
 			debug: true
 		},
 	},
 	backgroundColor: '#245b50'
 }
-const game = new Phaser.Game(config)
+export const game = new Phaser.Game(config)
+
 const customEmitter = new Phaser.Events.EventEmitter();
 const customHealthComponent = new HealthController(customEmitter);
 
@@ -32,7 +33,6 @@ game.scene.add('menu', new Menu())
 
 //levels
 game.scene.add('health_ui', new Health(customEmitter, customHealthComponent))
-
 game.scene.add('easy_level', new Easy(customHealthComponent))
 
 //boot

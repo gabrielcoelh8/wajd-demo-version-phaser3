@@ -36,10 +36,10 @@ export default class Preload extends Phaser.Scene {
         })
     }
 
-    update() {
-        this.bg.tilePositionX -= 0.4;
+    update(_time:number, delta: number) {
+        this.bg.tilePositionX -= (0.4*delta);
         this.tree.tilePositionX -= 0.5;
-        this.foreground.tilePositionX -= 0.6 ;
+        this.foreground.tilePositionX -= 0.6;
         this.fog.tilePositionX -= 0.3;
     }
 

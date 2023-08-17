@@ -9,6 +9,7 @@
 		"preview": "vite preview"
 	},
 	"devDependencies": {
+		"@types/react-dom": "^18.2.7",
 		"@typescript-eslint/eslint-plugin": "^5.40.0",
 		"@typescript-eslint/parser": "^5.40.0",
 		"eslint": "^8.25.0",
@@ -17,6 +18,8 @@
 	},
 	"dependencies": {
 		"phaser": "^3.60.0",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
 		"short-uuid": "^4.2.2"
 	}
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Phaser from "phaser";
-import { IComponent } from "../util/ComponentService";
+import { IComponent } from "../system/ComponentService";
 
 type AnimationData = {
     left: {key: string, flip?: boolean},

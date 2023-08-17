@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Phaser from "phaser";
-import Health from '../../components/healthController'
+import Health from '../../component/healthController'
 
 export default class Easy extends Phaser.Scene {
     //private CHAR_GRAVITY = 300;

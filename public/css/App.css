@@ -1,0 +1,15 @@
+canvas {
+    border-radius: 10px;
+}
+
+html,
+body {
+  margin: 0px;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: #928f8f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Phaser from "phaser";
+import Phaser, { GameObjects } from "phaser";
+import PlayerCollision from "../../component/PlayerCollision";
 import PlayerMovement from "../../component/PlayerMovement";
+import PlayerPhysics from "../../component/PlayerPhysics";
+import PlayerTexture from "../../component/PlayerTexture";
+import ComponentService from "../../system/ComponentService";
 import Health from '../../system/HealthSystem'
+import short from 'short-uuid'
 
 export default class Easy extends Phaser.Scene {
     //private CHAR_GRAVITY = 300;
@@ -18,7 +23,7 @@ export default class Easy extends Phaser.Scene {
 
     //private playerToOrderPlatformCollider?: Phaser.Physics.Arcade.Collider
 
-	private player!: Phaser.Physics.Arcade.Sprite
+	private player!: Phaser.GameObjects.GameObject
 
 	private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
 
@@ -45,11 +50,13 @@ export default class Easy extends Phaser.Scene {
     private camera!: Phaser.Cameras.Scene2D.Camera
     
     #health: Health;
-    #playerMovement!: PlayerMovement
+    
+    #componentService!: ComponentService
     
     constructor(health: Health) {
         super()
-        this.#health = health;
+        this.#health = health
+        this.#componentService = new ComponentService()
     }
 
     preload(): void {
@@ -69,7 +76,7 @@ export default class Easy extends Phaser.Scene {
         
         this.physics.world.setBounds(0, 0, width, height+200, false, false, true, true) ///collision only on down
         
-        const player = this.physics.add.sprite(point_x, point_y-80, this.MAIN_CHAR_KEY)
+       // const player = this.physics.add.sprite(point_x, point_y-80, this.MAIN_CHAR_KEY)
         const platforms = this.physics.add.staticGroup()
         const playersToOrder = this.physics.add.group()
         const numbersToOrder = this.physics.add.staticGroup()
@@ -80,8 +87,8 @@ export default class Easy extends Phaser.Scene {
             y: height/2
         }, true)
         const numberOfVariables = 4
-        const numeros = Array.from({ length: numberOfVariables }, (_, index) => index); //array de 0 ao tamanho da variável acima
-        const numerosAleatorios = this.shuffleNumeros(numeros);
+        const numeros = Array.from({ length: numberOfVariables }, (_, index) => index) //array de 0 ao tamanho da variável acima
+        const numerosAleatorios = this.shuffleNumeros(numeros)
         const alienColors = [
             /*'Beige', */
             'Blue', 
@@ -89,7 +96,7 @@ export default class Easy extends Phaser.Scene {
             'Yellow', 
             'Pink'
         ]
-        let alienKeys = Array.from({ length: alienColors.length }, (_, index) => index);
+        let alienKeys = Array.from({ length: alienColors.length }, (_, index) => index)
         /*
         sprites configuration
         */
@@ -108,17 +115,12 @@ export default class Easy extends Phaser.Scene {
         this.buildings.setDepth(-1) 
         this.foreground.setDepth(1)
         
-        player.setDepth(1)
-        player.setBounce(0.1)
-        player.setSize(50, 90)
-        player.setCollideWorldBounds(true)
-
         filter.fill(276558, 0.2)
         filter.setDepth(2) 
         /*
         plataforma auxiliar
         */
-        platforms.create(point_x, point_y, 'tiles', 'stoneCenter_rounded.png')
+        const aux_plat = platforms.create(point_x, point_y, 'tiles', 'stoneCenter_rounded.png')
         /*
         vidas label TODO: HEART
         */
@@ -128,8 +130,8 @@ export default class Easy extends Phaser.Scene {
 
         this.input.on(Phaser.Input.Events.POINTER_DOWN as string,  
             () => {
-            this.#health.loseHealth(); 
-        }, this);
+            this.#health.loseHealth()
+        }, this)
 
         /*
         platform and alien to order
@@ -153,59 +155,72 @@ export default class Easy extends Phaser.Scene {
             playerToOrder.setCollideWorldBounds(false)
             playersToOrder.add(playerToOrder) 
             const number = this.add.sprite(x, y, 'number',`hud_${numerosAleatorios[i]}.png`)
-            numbersToOrder.add(number, true) 
+            numbersToOrder.add(number, true)
             platforms.add(platform)
         }
         /*
         collision and overlap calls
         */
-        this.playerPlatform_Collider = this.physics.add.collider(player, platforms)
+    //    this.playerPlatform_Collider = this.physics.add.collider(player, platforms)
         
-        playersToOrder.getChildren().forEach((playerToOrder)=>{
+      /*  playersToOrder.getChildren().forEach((playerToOrder)=>{
             const _playerToOrder = playerToOrder as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
             const numberOf = _playerToOrder.data.get('number') as number
 
             this.physics.add.collider(_playerToOrder, platforms)
             this.physics.add.overlap(player, playerToOrder, () => this.handleOverlapUp(player, _playerToOrder, numberOf))
             }
-        )
-        this.zoneOfDeath = this.add.zone(0, height+250, width*2, 800);
-        this.physics.add.existing(this.zoneOfDeath, true);
-        this.physics.add.overlap(player, this.zoneOfDeath, () => this.handleDeathFall(player))
+        )*/
+        
+        
+        //this.zoneOfDeath = this.add.zone(0, height+250, width*2, 800)
+       // this.physics.add.existing(this.zoneOfDeath, true)
+        //this.physics.add.overlap(player, this.zoneOfDeath, () => this.//handleDeathFall(player))
+        
         /*
         camera
         */
         if(!this.input.keyboard) {
             return
         }
-
-        this.player = player
         this.cursors = this.input.keyboard.createCursorKeys()
-        this.#playerMovement = new PlayerMovement(this.cursors)
-        this.#playerMovement.init(player)
+        
+        const playerMovement = new PlayerMovement(this.cursors)
+        const playerTexture = new PlayerTexture(this.MAIN_CHAR_KEY, point_x, point_y, this.physics)
+        const playerCollision = new PlayerCollision(aux_plat, this.physics)
+        const playerPhysics = new PlayerPhysics()
+
+        this.player = new Phaser.GameObjects.GameObject(this, 'SpriteWithDynamicBody')
+
+        //components
+        this.#componentService.addComponent(this.player, playerTexture)
+        this.#componentService.addComponent(this.player, playerMovement)
+        this.#componentService.addComponent(this.player, playerCollision)
+        this.#componentService.addComponent(this.player, playerPhysics)
 
         this.camera = this.cameras.main
         this.cameras.main.startFollow(this.player, true, 0.5, 0.5)
     }
 
-    update(_time: number, _delta: number): void {
+    update(time: number, delta: number): void {
         /////////////////////
-        this.labels?.setText(`{Debug} 
+        this.labels?.setText(
+        `{Debug} 
         lifes:${this.#health.currentHealth}
         camera.x: ${this.cameras.main.scrollX}
         camera.y: ${this.cameras.main.scrollY}
         player_state: ${this.player.state}
         grabUp: ${this.grabUp}
-        player_X: ${this.player.body?.x}
-        player_Y: ${this.player.body?.y}
         player_velocityX: ${this.player.body?.velocity.x}
         player_velocityY: ${this.player.body?.velocity.y}
-        time: ${_time}
-        delta: ${_delta}
+        time: ${time}
+        delta: ${delta}
         `)
         ///////////////////
+
         this.lifes = this.#health.currentHealth
-        this.#playerMovement.update(_delta)
+
+        this.#componentService.update(delta)
     }
 
     //Fisher–Yates shuffle

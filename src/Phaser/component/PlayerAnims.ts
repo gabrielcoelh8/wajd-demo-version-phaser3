@@ -10,7 +10,7 @@ type AnimationData = {
     idle: {key: string, flip?: boolean}
 }
 
-export default class AnimsController implements IComponent {
+export default class PlayerAnims implements IComponent {
     private readonly cursors!: Phaser.Types.Input.Keyboard.CursorKeys
     private readonly data!: AnimationData
     private gameObject!: Phaser.Physics.Arcade.Sprite
@@ -31,8 +31,10 @@ export default class AnimsController implements IComponent {
             this.gameObject.play(key)
             this.gameObject.setFlipX(!!flip)
         } else {
-            const direction = this.gameObject.anims.currentAnim?.key.split('-')[1] //get direction based on anims key fixes
-            this.gameObject.play(`${this.data.idle.key}-${direction}`, true) //play anims idle for specify direction
+            const direction = this.gameObject.anims.currentAnim?.key.split('-')[1] 
+            //get direction based on anims key fixes
+            this.gameObject.play(`${this.data.idle.key}-${direction}`, true) 
+            //play anims idle for specify direction
         }
     }
 }

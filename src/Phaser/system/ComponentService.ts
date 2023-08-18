@@ -7,7 +7,7 @@ import short from 'short-uuid'
 export type Constructor<T extends {} = {}> = new (...args: any[]) => T
 
 export interface IComponent {
-    init(go: Phaser.GameObjects.GameObject):any
+    init(entity: Phaser.GameObjects.GameObject):any
 
     awake?: () => void
     start?: () => void
@@ -16,23 +16,24 @@ export interface IComponent {
 }
 
 export default class ComponentService {
-    private componentsByGameObject = new Map<string, IComponent[]>()
+    private componentsByEntity = new Map<string, IComponent[]>()
     private queuedForStart: IComponent[] = []
 
-    addComponent(go: Phaser.GameObjects.GameObject, component: IComponent) {
+    addComponent(entity: Phaser.GameObjects.GameObject, component: IComponent) {
         //gameobject unique name (name property is used here for id generated with short-uuid)
-        if(!go.name) {
-            go.name = short.generate()
+        if(!entity.name) {
+            entity.name = short.generate()
+            console.log(entity.name)
         }
         //init list of components for gameobject if there's not any
-        if(!this.componentsByGameObject.has(go.name)) {
-            this.componentsByGameObject.set(go.name, [])
+        if(!this.componentsByEntity.has(entity.name)) {
+            this.componentsByEntity.set(entity.name, [])
         }
-        const list = this.componentsByGameObject.get(go.name) as IComponent[]
+        const list = this.componentsByEntity.get(entity.name) as IComponent[]
         list.push(component)
 
         //lifecycle hooks
-        component.init(go)
+        component.init(entity)
 
         if(component.awake)
         {
@@ -45,17 +46,17 @@ export default class ComponentService {
         }
     }
 
-    findComponent<ComponentType extends {}>(go: Phaser.GameObjects.GameObject, componentType: Constructor<ComponentType>){
-        const components = this.componentsByGameObject.get(go.name)
+    findComponent<ComponentType extends {}>(entity: Phaser.GameObjects.GameObject, componentType: Constructor<ComponentType>){
+        const components = this.componentsByEntity.get(entity.name)
         if(!components) 
         {
             return null
         }
-        return components.find(_component => components instanceof componentType)
+        return components.find(_component => _component instanceof componentType)
     }
 
     destroy() { 
-        const entries = this.componentsByGameObject.entries() //get map of components 
+        const entries = this.componentsByEntity.entries() //get map of components 
         for (const [, components] of entries) {
             components.forEach(component => {
                 //verify if optional method is defined
@@ -77,7 +78,7 @@ export default class ComponentService {
         }
 
         //update components
-        const entries = this.componentsByGameObject.entries() //get map of components 
+        const entries = this.componentsByEntity.entries() //get map of components 
         for (const [, components] of entries) {
             components.forEach(component => {
                 if(component.update) {

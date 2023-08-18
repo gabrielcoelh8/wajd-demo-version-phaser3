@@ -47,7 +47,7 @@ export default class StateMachine
             onUpdate: config?.onUpdate?.bind(context),
             onExit: config?.onExit?.bind(context)
         })
-    
+
         return this
 	}
 
